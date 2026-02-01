@@ -1,1 +1,122 @@
+---
+title: "Latihan Praktikum 1 MSR"
+author: "Atha Nabilah Rosyadi"
+date: "2026-1-30"
+output: 
+  rmdformats::readthedown:
+    toc_depth: 2      
+    number_sections: false
+    self_contained: true
+    highlight: kate
+    thumbnails: false
+---
+
+# Soal 1
+
+Dalam sebuah kelompok berisi 10 orang, terdapat 4 orang yang mahir dan 6 orang pemula. Sebuah tim dengan 5 anggota akan dipilih secara acak.
+
+Buat simulasi pemilihan tim sebanyak 1000 kali.
+Hitung rata-rata jumlah anggota mahir dalam tim berdasarkan simulasi tersebut.
+Gambarkan barchart hasil simulasi.
+
+```{r}
+# Fungsi untuk simulasi pemilihan tim
+SimulasiTim = function() { # Mendefinisikan fungsi bernama SimulasTim
+  kelompok = c(rep("Mahir", 4), rep("Pemula", 6)) # Mahir = 4, Pemula = 6 yaitu mengulang teks "Mahir" sebanyak 4 kali dan "Pemula" sebanyak 6x kemudian menggabungkan hasil tersebut dengan c
+  tim = sample(kelompok, 5, replace = FALSE) #Mengambil 5 orang secara acak dari kelompok dan tanpa pengembalian
+  return(sum(tim == "Mahir")) # Jumlah anggota mahir dalam tim
+}
+
+# Jalankan simulasi 1000 kali
+set.seed(123) # Membuat hasil acak tetap sama
+hasil = replicate(1000, SimulasiTim()) # Menjalankan fungsi sebanyak 1000 kali
+rata_rata_mahir = mean(hasil) # Menghitung rata-rata jumlah anggota Mahir dari 1000 simulasi
+
+cat("Rata-rata jumlah anggota mahir dalam tim:", rata_rata_mahir, "\n") # Menampilkan hasil
+```
+```{r}
+# Membuat Barplot
+barplot(table(hasil), main = "Histogram Jumlah Anggota Mahir dalam Tim", xlab = "Jumlah Anggota Mahir", ylab = "Frekuensi", col = "lightblue") # Membuat diagram batang dengan menghitung frekuensi dan memberikan judul, label, dan warna batang
+```
+
+# Soal 2
+
+Dalam sebuah lotere, terdapat 100 tiket dengan nomor dari 1 hingga 100. Dari total tiket, hanya 10 tiket yang merupakan tiket pemenang.
+
+Simulasikan pengambilan tiket secara acak sebanyak 3 kali tanpa pengembalian.
+
+Tentukan apakah salah satu tiket yang diambil adalah tiket pemenang.
+
+Ulangi simulasi sebanyak 1000 kali, hitung peluang mendapatkan setidaknya 1 tiket pemenang.
+
+```{r}
+set.seed(123) # Mengatur seed random
+
+# Simulasi pengambilan tiket
+simulasi_tiket = function() { # Mendefinisikan fungsi
+  # Mengambil 3 tiket secara acak
+  tiket = sample(1:100, 3, replace = FALSE) # Mengambil 3 tiket dari 1-100 tanpa pengembalian
+  # Menentukan apakah ada tiket pemenang
+  ada_pemenang = any(tiket %in% 1:10) # Mengecek minimal 1 dari 3 tiket termasuk pemenang
+  return(ada_pemenang) # Mengembalikan jika ada minimal 1 tiket pemenang
+}
+
+# Simulasi untuk banyak pengambilan
+n_simulasi = 1000 # Simulasi diulang sebanyak 1000 kali
+
+# Hasil simulasi
+hasil_simulasi = replicate(n_simulasi, simulasi_tiket()) # Menjalankan fungsi sebanyak 1000 kali
+
+# Menghitung peluang mendapatkan setidaknya 1 tiket pemenang
+peluang = mean(hasil_simulasi) # Menghitung peluang secara simulasi
+
+# Menampilkan hasil
+cat("Peluang mendapatkan setidaknya 1 tiket pemenang:", peluang, "\n") # Menampilkan peluang
+```
+```{r}
+# Fungsi untuk simulasi lotere
+SimulasiLotere = function() { # Mendefinisikan fungsi
+  tiket = c(rep("Biasa", 90),rep("Pemenang", 10)) # 10 tiket pemenang, 90 tiket biasa # Membuat populasi tiket berbentuk kategori
+  pilihan = sample(tiket, 3, replace = FALSE) # Mengambil 3 tiket secara acak tanpa pengembalian
+  return(any(pilihan == "Pemenang")) # Apakah ada tiket pemenang # Mengecek apakah terdapat minimal 1 tiket pemenang
+}
+
+# Jalankan simulasi 1000 kali
+set.seed(123) # Seed diatur agar hasil konsisten
+hasil = replicate(1000, SimulasiLotere()) # Menjalankan simulasi sebanyak 1000 kali
+peluang_menang = mean(hasil) # Menghitung peluang menang dari simulasi
+
+cat("Peluang mendapatkan setidaknya 1 tiket pemenang:", peluang_menang, "\n") # Menampilkan hasil akhir
+```
+
+# Soal 3
+
+Sebuah permainan domino menggunakan kartu bernomor 1 hingga 12. Saat kartu pertama diambil, kartu kedua runtuh jika nomor kartu pertama adalah kelipatan dari nomor kartu kedua.
+
+Buat simulasi mengambil 2 kartu acak dari tumpukan (tanpa pengembalian).
+Tentukan apakah kartu kedua akan runtuh.
+Ulangi simulasi sebanyak 500 kali, hitung berapa kali kartu kedua runtuh, dan hitung peluang runtuhnya kartu kedua.
+
+```{r}
+# Fungsi untuk simulasi runtuhnya kartu domino
+SimulasiDomino = function() { # Mendefinisikan fungsi
+  kartu = sample(1:12, 2, replace = FALSE) # Mengambil 2 kartu domino berbeda secara acak dari 1-12
+  if (kartu[1] %% kartu[2] == 0) { # If untuk menentukan apakah kartu kedua runtuh
+    return(1) # Kartu kedua runtuh maka menampilkan 1
+  } else { # Jika if tidak terpenuhi
+    return(0) # Kartu kedua tidak runtuh maka menampilkan 0
+  }
+}
+
+# Jalankan simulasi 500 kali
+set.seed(123) # Mengatur seed agar konsisten
+hasil = replicate(500, SimulasiDomino()) # Menjalankan fungsi sebanyak 500 kali
+peluang_runtuh = mean(hasil) # Menghitung peluan kartu kedua runtuh
+
+cat("Jumlah runtuhnya kartu kedua:", sum(hasil), "\n") # Menampilan total kejadian runtuh dari 500 simulasi
+```
+
+```{r}
+cat("Peluang kartu kedua runtuh:", peluang_runtuh, "\n") # Menampilkan peluang runtuh dalam bentuk desimal
+```
 
