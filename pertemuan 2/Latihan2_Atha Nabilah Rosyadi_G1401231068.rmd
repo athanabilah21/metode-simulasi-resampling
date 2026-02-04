@@ -1,1 +1,161 @@
+---
+title: "Latihan Praktikum 2 MSR"
+author: "Atha Nabilah Rosyadi"
+date: "2026-2-4"
+output: 
+  rmdformats::readthedown:
+    toc_depth: 2      
+    number_sections: false
+    self_contained: true
+    highlight: kate
+    thumbnails: false
+---
 
+# No 1
+Di sebuah perusahaan teknologi, ada 200 orang karyawan. Peluang setiap karyawan dipilih untuk menjadi anggota tim proyek adalah 0,2. Setiap karyawan yang terpilih memiliki peluang 0,8 untuk berhasil menyelesaikan tugasnya di proyek tersebut. Buat simulasi untuk menghitung:
+
+1. Berapa banyak anggota tim yang akan berhasil menyelesaikan tugasnya.
+
+2. Hitung varians dan standar deviasi jumlah karyawan yang berhasil menyelesaikan tugasnya.
+
+3. Tentukan apakah proyek akan berhasil (jika lebih dari 60% anggota tim berhasil menyelesaikan tugasnya).
+
+Petunjuk: Gunakan distribusi Binomial untuk menghitung jumlah karyawan yang terpilih dan distribusi Bernoulli untuk setiap karyawan yang terpilih untuk menentukan apakah mereka berhasil menyelesaikan tugas, gunakan set.seed(123).
+
+```{r}
+# Simulasi Tim Proyek
+set.seed(123)
+
+# Parameter
+n_karyawan <- 200
+p_terpilih <- 0.2
+p_berhasil <- 0.8
+
+# Jumlah karyawan yang terpilih (Binomial)
+jumlah_terpilih <- rbinom(1, n_karyawan, p_terpilih)
+
+# Keberhasilan tiap karyawan terpilih (Bernoulli)
+berhasil <- rbinom(jumlah_terpilih, 1, p_berhasil)
+
+# Jumlah karyawan yang berhasil
+jumlah_berhasil <- sum(berhasil)
+jumlah_berhasil
+```
+```{r}
+# Varians dan Standar Deviasi
+varians <- var(berhasil)
+sd <- sd(berhasil)
+
+varians
+sd
+```
+```{r}
+# Keputusan Proyek
+proporsi_berhasil <- jumlah_berhasil / jumlah_terpilih
+
+proyek_berhasil <- proporsi_berhasil > 0.6
+proyek_berhasil
+```
+### Interpretasi
+
+1. Sebanyak 29 anggota tim berhasil menyelesaikan tugasnya.
+
+2. Varians anggota tim yang berhasil menyelesaikan tugasnya sebesar 0.1956815 dan standar deviasinya sebesar 0.442359.
+
+3. Proyek berhasil karena lebih dari 60% anggota tim berhasil menyelesaikan tugasnya.
+
+
+# No 2
+
+Sebuah pabrik elektronik memproduksi 1000 unit barang per hari. Setiap barang memiliki peluang 0,95 untuk melewati tahap pengujian pertama (Pengujian A) dan peluang 0,85 untuk melewati tahap pengujian kedua (Pengujian B), dengan catatan hanya barang yang lolos Pengujian A yang akan diuji di Pengujian B. Tentukan:
+
+1. Jumlah barang yang lolos kedua pengujian.
+
+2. Perhitungan probabilitas total barang yang lolos kedua pengujian.
+
+3. Berapa banyak barang yang lolos kedua pengujian dan memiliki cacat kecil (dengan probabilitas 0,02 untuk cacat kecil pada barang yang lolos).
+
+Petunjuk: Gunakan distribusi Binomial untuk menghitung barang yang lolos Pengujian A dan distribusi Bernoulli untuk barang yang lolos Pengujian B, gunakan set.seed(123).
+
+```{r}
+# Pengujian Barang di Pabrik
+set.seed(123)
+
+# Parameter
+n_barang <- 1000
+p_A <- 0.95
+p_B <- 0.85
+p_cacat <- 0.02
+
+# Lolos Pengujian A (Binomial)
+lolos_A <- rbinom(1, n_barang, p_A)
+
+# Lolos Pengujian B (Bernoulli untuk tiap barang lolos A)
+lolos_B <- rbinom(lolos_A, 1, p_B)
+
+# Jumlah barang lolos A dan B
+jumlah_lolos_AB <- sum(lolos_B)
+jumlah_lolos_AB
+```
+
+```{r}
+# Probabilitas Total Lolos Kedua Pengujian
+prob_lolos_AB <- p_A * p_B
+prob_lolos_AB
+```
+```{r}
+# Barang Lolos Tapi Cacat Kecil
+cacat_kecil <- rbinom(jumlah_lolos_AB, 1, p_cacat)
+jumlah_cacat_kecil <- sum(cacat_kecil)
+
+jumlah_cacat_kecil
+```
+### Interpretasi
+
+1. Jumlah barang yang lolos pengujian sebanyak 809 barang.
+
+2. Probabilitas barang yang lolos kedua pengujian sebesar 0,8075.
+
+3. Barang yang lolos kedua pengujian dan memiliki cacat kecil sebanyak 18 barang.
+
+
+# No 3
+
+Sebuah aplikasi baru menawarkan model langganan premium. Dari 500 pengguna yang mencoba aplikasi selama satu bulan percobaan, peluang seorang pengguna berlangganan premium adalah 0,15. Gunakan distribusi Binomial untuk menghitung:
+
+1. Jumlah pengguna yang berlangganan premium.
+
+2. Perkiraan jumlah pengguna yang tidak berlangganan.
+
+3. Hitung kemungkinan lebih dari 80 pengguna yang berlangganan premium menggunakan probabilitas distribusi Binomial.
+
+```{r}
+# Langganan Premium Aplikasi
+# Parameter
+n_user <- 500
+p_premium <- 0.15
+
+# Jumlah pengguna berlangganan premium
+premium <- rbinom(1, n_user, p_premium)
+premium
+```
+
+```{r}
+# Jumlah yang Tidak Berlangganan
+tidak_premium <- n_user - premium
+tidak_premium
+```
+
+```{r}
+# Probabilitas lebih dari 80 Pengguna Premium
+prob_lebih_80 <- 1 - pbinom(80, n_user, p_premium)
+prob_lebih_80
+```
+
+### Interpretasi
+
+1. Jumlah pengguna yang berlangganan premium sebanyak 73 pengguna.
+
+2. Perkiraan jumlah pengguna yang tidak berlangganan sebanyak 427 pengguna.
+
+3. Probabilitas lebih dari 80 pengguna yang berlangganan premium sebesar 0,2430533.
