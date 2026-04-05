@@ -1,1 +1,128 @@
+---
+title: "Latihan Praktikum 5 MSR"
+author: "Atha Nabilah Rosyadi"
+date: "2026-4-5"
+output: 
+  rmdformats::readthedown:
+    toc_depth: 2      
+    number_sections: false
+    self_contained: true
+    highlight: kate
+    thumbnails: false
+---
 
+# Tujuan
+
+Dalam latihan ini, Anda akan mempelajari dan membandingkan distribusi rata-rata sampel dari beberapa distribusi yang berbeda, baik dengan populasi terhingga maupun tak terhingga. Distribusi yang akan Anda gunakan adalah distribusi Normal, Eksponensial, Uniform, dan Gamma(3,5).
+
+# a. Persiapkan Populasi
+
+Buat 4 populasi besar dengan ukuran 1.000.000 elemen masing-masing:
+
+-   Populasi Normal (menggunakan rnorm(1000000))
+
+-   Populasi Eksponensial (menggunakan rexp(1000000)) - Populasi Uniform (menggunakan runif(1000000))
+
+-   Populasi Gamma(3,5) (menggunakan rgamma(1000000, shape = 3, scale = 5))
+
+```{r}
+set.seed(123)
+
+# Membuat populasi (1.000.000 data)
+pop_normal <- rnorm(1000000)
+pop_exp <- rexp(1000000)
+pop_uniform <- runif(1000000)
+pop_gamma <- rgamma(1000000, shape = 3, scale = 5)
+```
+
+# b. Ambil Sampel dari Populasi
+
+-   Lakukan simulasi dengan mengambil 3 ukuran sampel yang berbeda: n = 5, n = 50, dan n = 500.
+-   Ambil 1000 sampel untuk setiap ukuran sampel tersebut, dan hitung rata-rata dari setiap sampel.
+
+```{r}
+n_values <- c(5, 50, 500)
+k <- 1000
+```
+
+# c. Distribusi Sampel
+
+-   Untuk setiap populasi dan ukuran sampel (n = 5, n = 50, n = 500), buat histogram yang menunjukkan distribusi rata-rata sampel.
+-   Setiap histogram harus diberi judul yang sesuai, seperti “Distribusi Rata-Rata Sampel Normal (n=5)”, “Distribusi Rata-Rata Sampel Eksponensial (n=50)”, dll.
+
+```{r}
+par(mfrow=c(3,4))  # layout 3x4
+
+for(n in n_values){
+  
+  # NORMAL
+  x <- matrix(sample(pop_normal, n*k, replace=TRUE), nrow=k)
+  x_mean <- apply(x, 1, mean)
+  hist(x_mean, main=paste0("Distribusi Rata-Rata Sampel Normal (n=", n, ")"),
+       xlab="Mean", col="lightblue")
+  
+  # EKSPONENSIAL
+  x <- matrix(sample(pop_exp, n*k, replace=TRUE), nrow=k)
+  x_mean <- apply(x, 1, mean)
+  hist(x_mean, main=paste0("Distribusi Rata-Rata Sampel Eksponensial (n=", n, ")"),
+       xlab="Mean", col="lightgreen")
+  
+  # UNIFORM
+  x <- matrix(sample(pop_uniform, n*k, replace=TRUE), nrow=k)
+  x_mean <- apply(x, 1, mean)
+  hist(x_mean, main=paste0("Distribusi Rata-Rata Sampel Uniform (n=", n, ")"),
+       xlab="Mean", col="lightpink")
+  
+  # GAMMA
+  x <- matrix(sample(pop_gamma, n*k, replace=TRUE), nrow=k)
+  x_mean <- apply(x, 1, mean)
+  hist(x_mean, main=paste0("Distribusi Rata-Rata Sampel Gamma (n=", n, ")"),
+       xlab="Mean", col="lightyellow")
+}
+```
+
+# d. Perbandingan Hasil
+
+-   Setelah Anda mendapatkan histogram untuk setiap distribusi (Normal, Eksponensial, Uniform, dan Gamma), bandingkan dan jelaskan perbedaannya.
+-   Jelaskan bagaimana distribusi rata-rata sampel berubah dengan meningkatnya ukuran sampel (dari n=5, n=50, dan n=500).
+-   Diskusikan apakah distribusi rata-rata sampel mulai mendekati distribusi normal seiring dengan bertambahnya ukuran sampel.
+
+```{r}
+# Fungsi untuk ambil mean & variance
+hitung_stat <- function(pop){
+  hasil <- data.frame()
+  
+  for(n in n_values){
+    x <- matrix(sample(pop, n*k, replace=TRUE), nrow=k)
+    x_mean <- apply(x, 1, mean)
+    
+    hasil <- rbind(hasil,
+                   data.frame(
+                     n = n,
+                     Mean = mean(x_mean),
+                     Variance = var(x_mean)
+                   ))
+  }
+  return(hasil)
+}
+
+# Hitung untuk tiap distribusi
+stat_normal <- hitung_stat(pop_normal)
+stat_exp <- hitung_stat(pop_exp)
+stat_uniform <- hitung_stat(pop_uniform)
+stat_gamma <- hitung_stat(pop_gamma)
+
+# Tampilkan hasil
+stat_normal
+stat_exp
+stat_uniform
+stat_gamma
+```
+
+# Interpretasi
+
+Pada ukuran sampel kecil (n = 5), distribusi rata-rata sampel masih mengikuti bentuk distribusi awal, di mana Eksponensial dan Gamma terlihat miring, sedangkan Uniform cenderung datar. Distribusi Normal tetap simetris sejak awal.
+
+Seiring meningkatnya ukuran sampel (n = 50 dan n = 500), semua distribusi rata-rata sampel menjadi lebih simetris dan mendekati distribusi normal. Selain itu, varians semakin kecil sehingga data lebih terpusat di sekitar rata-rata.
+
+Hal ini sesuai dengan Teorema Limit Pusat, yaitu semakin besar ukuran sampel, distribusi rata-rata sampel akan mendekati distribusi normal независимо dari distribusi populasi awal.
